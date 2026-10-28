@@ -45,9 +45,18 @@ class Settings(BaseSettings):
                 )
         return v
 
+    def model_post_init(self, __context: object) -> None:
+        """Create the private runtime directory before SQLite opens its file."""
+        path = Path(self.DATA_DIR)
+        if not path.is_absolute():
+            path = BASE_DIR / path
+        path.mkdir(parents=True, exist_ok=True)
+
     @property
     def data_path(self) -> Path:
         path = Path(self.DATA_DIR)
+        if not path.is_absolute():
+            path = BASE_DIR / path
         path.mkdir(parents=True, exist_ok=True)
         return path
 
