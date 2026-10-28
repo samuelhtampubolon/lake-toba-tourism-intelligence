@@ -6,7 +6,7 @@
 [![Security: OWASP ASVS](https://img.shields.io/badge/Security-OWASP%20ASVS%20Guarded-cyan.svg)](docs/security.md)
 [![Live Showcase](https://img.shields.io/badge/Live%20Showcase-GitHub%20Pages-purple.svg)](https://samuelhtampubolon.github.io/lake-toba-tourism-intelligence/)
 
-> **Local-first decision-support platform for tourism demand analysis, customer segmentation, revenue forecasting, and marketing-budget scenarios for the Lake Toba region (North Sumatra, Indonesia).**
+> **Local-first decision-support platform for tourism demand analysis, customer segmentation, revenue forecasting, and marketing-budget scenarios for the Lake Toba region (North Sumatra, Indonesia). **
 
 🌐 **Interactive Web Showcase**: [https://samuelhtampubolon.github.io/lake-toba-tourism-intelligence/](https://samuelhtampubolon.github.io/lake-toba-tourism-intelligence/)
 
