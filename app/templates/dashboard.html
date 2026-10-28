@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | Lake Toba Tourism Intelligence{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
+  <div>
+    <h1 style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em;">Regional Tourism Performance Overview</h1>
+    <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+      Monitoring demand, hotel yield, and traveler footfall across Lake Toba destinations (Parapat, Samosir, Balige, Tongging, Silangit).
+    </p>
+  </div>
+
+  <div style="display: flex; gap: 10px; align-items: center;">
+    {% if dataset and dataset.is_synthetic %}
+      <span class="badge badge-synthetic">⚠️ Synthetic Benchmark Data</span>
+    {% endif %}
+    {% if not dataset %}
+      <form action="/admin/seed-demo" method="POST" style="display:inline;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-emerald">Load Lake Toba Benchmark Data</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+{% if not dataset %}
+  <div class="empty-state">
+    <div class="empty-icon">📊</div>
+    <h2 class="empty-title">No Active Tourism Dataset Loaded</h2>
+    <p class="empty-desc">
+      Load the official Lake Toba 2-year synthetic benchmark dataset or import your own UTF-8 CSV observation records.
+    </p>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+      <form action="/admin/seed-demo" method="POST" style="display:inline;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-emerald">Load 2-Year Synthetic Benchmark</button>
+      </form>
+      <a href="/datasets/upload" class="btn btn-outline">Upload Custom CSV</a>
+    </div>
+  </div>
+{% else %}
+  <!-- Top KPI Cards -->
+  <div class="grid-cols-4">
+    <div class="card metric-card">
+      <div class="metric-label">Total Regional Footfall</div>
+      <div class="metric-val">{{ "{:,}".format(total_visitors) }}</div>
+      <div class="metric-sub">{{ domestic_pct }}% Domestic &bull; {{ intl_pct }}% International</div>
+    </div>
+
+    <div class="card metric-card emerald">
+      <div class="metric-label">Estimated Tourism Yield</div>
+      <div class="metric-val">IDR {{ "{:,.0f}".format(total_revenue / 1000000000.0) }} B</div>
+      <div class="metric-sub">Hotels + Local Tourism Expenditure</div>
+    </div>
+
+    <div class="card metric-card amber">
+      <div class="metric-label">Average Hotel Occupancy</div>
+      <div class="metric-val">{{ avg_occupancy }}%</div>
+      <div class="metric-sub">Across 6 key accommodation hubs</div>
+    </div>
+
+    <div class="card metric-card purple">
+      <div class="metric-label">Average Daily Rate (ADR)</div>
+      <div class="metric-val">IDR {{ "{:,.0f}".format(avg_adr) }}</div>
+      <div class="metric-sub">Peak seasonality multiplier: 1.8x - 2.2x</div>
+    </div>
+  </div>
+
+  <!-- Grain Selector Bar -->
+  <div class="card" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <span style="font-size: 13px; color: var(--text-muted); margin-right: 12px;">Temporal Grain:</span>
+      <a href="/dashboard?grain=daily" class="btn btn-sm {% if grain == 'daily' %}btn-primary{% else %}btn-outline{% endif %}">Daily</a>
+      <a href="/dashboard?grain=weekly" class="btn btn-sm {% if grain == 'weekly' %}btn-primary{% else %}btn-outline{% endif %}">Weekly</a>
+      <a href="/dashboard?grain=monthly" class="btn btn-sm {% if grain == 'monthly' %}btn-primary{% else %}btn-outline{% endif %}">Monthly</a>
+    </div>
+
+    <div style="font-size: 12px; color: var(--text-muted);">
+      Dataset: <strong>{{ dataset.name }}</strong> (v{{ dataset.version }}) &bull; {{ dataset.row_count }} observations
+    </div>
+  </div>
+
+  <div class="grid-cols-2">
+    <!-- Destination Breakdown Table -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Destination Performance Matrix</h2>
+        <a href="/datasets/{{ dataset.id }}/quality" class="btn btn-sm btn-outline">Data Quality Profile</a>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Destination</th>
+              <th>Regency</th>
+              <th>Total Visitors</th>
+              <th>Intl %</th>
+              <th>Avg Occ</th>
+              <th>Total Yield</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dest in destinations %}
+              <tr>
+                <td><strong>{{ dest.name }}</strong></td>
+                <td><span style="color: var(--text-muted);">{{ dest.regency }}</span></td>
+                <td>{{ "{:,}".format(dest.total_visitors) }}</td>
+                <td>{{ dest.intl_percentage }}%</td>
+                <td>{{ dest.avg_occupancy_rate }}%</td>
+                <td style="font-family: var(--font-mono); color: var(--accent-emerald);">IDR {{ "{:,.1f}".format(dest.total_revenue_idr / 1000000000.0) }} B</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Seasonality Insights Card -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Seasonality & Calendar Multipliers</h2>
+        <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">Weekend Ratio: {{ seasonality.weekend_to_weekday_ratio }}x</span>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        {{ seasonality.explanation }}
+      </p>
+
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Avg Daily Visitors</th>
+              <th>Daily Yield</th>
+              <th>Season Tier</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in seasonality.monthly %}
+              <tr>
+                <td><strong>{{ m.month_name }}</strong></td>
+                <td>{{ "{:,.0f}".format(m.avg_daily_visitors) }} pax</td>
+                <td style="font-family: var(--font-mono);">IDR {{ "{:,.0f}".format(m.avg_daily_revenue_idr / 1000000.0) }} M</td>
+                <td>
+                  {% if m.month_number in [2, 7, 12] %}
+                    <span class="badge" style="background: rgba(248, 113, 113, 0.2); color: var(--accent-rose);">Peak Event</span>
+                  {% elif m.month_number in [6, 1] %}
+                    <span class="badge" style="background: rgba(251, 191, 36, 0.2); color: var(--accent-amber);">High Season</span>
+                  {% else %}
+                    <span class="badge" style="background: rgba(148, 163, 184, 0.15); color: var(--text-muted);">Regular</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Aggregated Time Series Table -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Aggregated Time-Series Observations ({{ grain | capitalize }})</h2>
+      <a href="/reports/export-csv?dataset_id={{ dataset.id }}" class="btn btn-sm btn-outline">Export Safe CSV</a>
+    </div>
+    <div style="overflow-x: auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Period</th>
+            <th>Domestic Visitors</th>
+            <th>International Visitors</th>
+            <th>Total Visitors</th>
+            <th>Avg Hotel Occupancy</th>
+            <th>Avg Daily Rate (ADR)</th>
+            <th>Total Regional Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in series[-15:] %}
+            <tr>
+              <td><strong>{{ row.period }}</strong></td>
+              <td>{{ "{:,}".format(row.visitors_domestic) }}</td>
+              <td>{{ "{:,}".format(row.visitors_international) }}</td>
+              <td><strong>{{ "{:,}".format(row.total_visitors) }}</strong></td>
+              <td>{{ row.avg_occupancy_rate }}%</td>
+              <td style="font-family: var(--font-mono);">IDR {{ "{:,.0f}".format(row.avg_daily_rate_idr) }}</td>
+              <td style="font-family: var(--font-mono); color: var(--accent-emerald);">IDR {{ "{:,.0f}".format(row.total_revenue_idr) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

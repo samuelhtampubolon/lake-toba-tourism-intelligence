@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lake-toba-tourism-intelligence"
+version = "1.0.0"
+description = "Local-first decision-support platform for tourism demand analysis, customer segmentation, revenue forecasting, and marketing-budget scenarios for the Lake Toba region."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "Samuel H. Tampubolon", email = "samuel@example.com" }
+]
+keywords = [
+    "tourism-analytics",
+    "lake-toba",
+    "demand-forecasting",
+    "scenario-modeling",
+    "local-first",
+    "fastapi",
+    "sqlite"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "sqlalchemy>=2.0.35",
+    "pydantic>=2.8.0",
+    "pydantic-settings>=2.4.0",
+    "jinja2>=3.1.4",
+    "python-multipart>=0.0.9",
+    "argon2-cffi>=23.1.0",
+    "python-dateutil>=2.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "httpx>=0.27.0",
+    "ruff>=0.6.0",
+]
+
+[project.scripts]
+toba-admin = "app.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

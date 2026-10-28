@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Dataset Registry | Lake Toba Tourism Intelligence{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+  <div>
+    <h1 style="font-size: 24px; font-weight: 700;">Tourism Dataset Registry & Provenance</h1>
+    <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+      Trace data origins, licensing terms, collection geography, and data quality profiles.
+    </p>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <a href="/datasets/upload" class="btn btn-primary">+ Ingest CSV Dataset</a>
+    <form action="/admin/seed-demo" method="POST" style="display:inline;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button type="submit" class="btn btn-outline">Generate Synthetic Benchmark</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div style="overflow-x: auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Dataset Name</th>
+          <th>Provenance Source</th>
+          <th>License</th>
+          <th>Geography</th>
+          <th>Observations</th>
+          <th>Type</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ds in datasets %}
+          <tr>
+            <td>
+              <strong>{{ ds.name }}</strong>
+              <div style="font-size: 11px; color: var(--text-muted);">Version {{ ds.version }} &bull; Collected {{ ds.collection_date }}</div>
+            </td>
+            <td>
+              <div>{{ ds.provenance_source }}</div>
+              {% if ds.source_url %}
+                <a href="{{ ds.source_url }}" target="_blank" rel="noopener" style="font-size: 11px; color: var(--accent-cyan); text-decoration: none;">View Source Reference &rarr;</a>
+              {% endif %}
+            </td>
+            <td><span class="badge" style="background: rgba(255,255,255,0.08);">{{ ds.license }}</span></td>
+            <td><span style="font-size: 12px; color: var(--text-muted);">{{ ds.geography }}</span></td>
+            <td><strong>{{ "{:,}".format(ds.row_count) }}</strong></td>
+            <td>
+              {% if ds.is_synthetic %}
+                <span class="badge badge-synthetic">Synthetic</span>
+              {% else %}
+                <span class="badge" style="background: rgba(52, 211, 153, 0.15); color: var(--accent-emerald);">Imported</span>
+              {% endif %}
+            </td>
+            <td>
+              <div style="display: flex; gap: 8px;">
+                <a href="/datasets/{{ ds.id }}/quality" class="btn btn-sm btn-outline">Quality Profile</a>
+                <a href="/reports/export-csv?dataset_id={{ ds.id }}" class="btn btn-sm btn-outline">Export CSV</a>
+                {% if user.role in ['business_owner', 'tourism_analyst'] %}
+                  <form action="/datasets/{{ ds.id }}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this dataset? All derived forecast runs and scenario caches will be removed.');" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                  </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 32px; color: var(--text-muted);">
+              No datasets found in registry. Load the Lake Toba synthetic benchmark or import a CSV file.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

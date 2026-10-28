@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Customer Segments | Lake Toba Tourism Intelligence{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 700;">Customer Segmentation & Regional Economic Contribution</h1>
+  <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+    Standardized behavioral travel profiles across group size, length of stay, daily expenditure, and regional revenue share.
+  </p>
+</div>
+
+<!-- Privacy Safeguards Alert -->
+<div class="alert alert-info">
+  <strong>Data Privacy & Minimization Safeguard:</strong> {{ seg_data.privacy_notice }}
+</div>
+
+<div class="grid-cols-2">
+  {% for s in seg_data.segments %}
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); margin-bottom: 4px;">{{ s.code }}</span>
+          <h2 class="card-title" style="font-size: 18px;">{{ s.name }}</h2>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 18px; font-weight: 700; font-family: var(--font-mono); color: var(--accent-emerald);">{{ s.revenue_share_percentage }}%</div>
+          <div style="font-size: 11px; color: var(--text-muted);">Revenue Share</div>
+        </div>
+      </div>
+
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        {{ s.description }}
+      </p>
+
+      <div class="grid-cols-3" style="margin-bottom: 16px;">
+        <div style="padding: 10px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+          <div style="font-size: 11px; color: var(--text-muted);">Avg Party Size</div>
+          <div style="font-size: 18px; font-weight: 700; font-family: var(--font-mono);">{{ s.travel_party_size }} pax</div>
+        </div>
+        <div style="padding: 10px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+          <div style="font-size: 11px; color: var(--text-muted);">Avg Stay Duration</div>
+          <div style="font-size: 18px; font-weight: 700; font-family: var(--font-mono);">{{ s.avg_stay_days }} days</div>
+        </div>
+        <div style="padding: 10px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+          <div style="font-size: 11px; color: var(--text-muted);">Avg Daily Spend</div>
+          <div style="font-size: 18px; font-weight: 700; font-family: var(--font-mono); color: var(--accent-cyan);">IDR {{ "{:,.0f}".format(s.avg_spend_per_day_idr / 1000.0) }}k</div>
+        </div>
+      </div>
+
+      <div>
+        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 6px;">Activities & Preference Focus:</span>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          {% for tag in s.preference_tags %}
+            <span class="badge" style="background: rgba(255,255,255,0.05); color: var(--text-primary); font-weight: 400;">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

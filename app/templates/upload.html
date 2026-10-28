@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Ingest CSV Dataset | Lake Toba Tourism Intelligence{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <div style="margin-bottom: 24px;">
+    <a href="/datasets" style="font-size: 13px; color: var(--accent-cyan); text-decoration: none;">&larr; Back to Datasets Registry</a>
+    <h1 style="font-size: 24px; font-weight: 700; margin-top: 8px;">Ingest CSV Tourism Dataset</h1>
+    <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+      Upload UTF-8 encoded CSV files. Supported Lake Toba destination codes: <code>PARAPAT</code>, <code>TUKTUK</code>, <code>BALIGE</code>, <code>TONGGING</code>, <code>PANGURURAN</code>, <code>SILANGIT</code>.
+    </p>
+  </div>
+
+  {% if preview %}
+    <!-- Preview Step -->
+    <div class="card" style="margin-bottom: 24px;">
+      <div class="card-header">
+        <h2 class="card-title">File Ingestion Preview: {{ preview.file_name }}</h2>
+        <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">{{ preview.total_rows }} Rows Detected</span>
+      </div>
+
+      {% if preview.has_errors %}
+        <div class="alert alert-warning">
+          <strong>Validation Warnings Detected:</strong>
+          <ul style="margin-top: 6px; padding-left: 20px;">
+            {% for err in preview.validation_errors %}
+              <li>{{ err }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <div style="margin-bottom: 16px;">
+        <span style="font-size: 12px; color: var(--text-muted);">SHA-256 Digest:</span>
+        <code style="display: block; background: #000; padding: 6px 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; color: var(--accent-cyan); margin-top: 4px;">
+          {{ preview.file_hash_sha256 }}
+        </code>
+      </div>
+
+      <h3 style="font-size: 14px; margin-bottom: 10px;">First 5 Records:</h3>
+      <div style="overflow-x: auto; margin-bottom: 24px;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              {% for h in preview.headers %}
+                <th>{{ h }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in preview.preview_rows %}
+              <tr>
+                {% for col in r %}
+                  <td>{{ col }}</td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <form action="/datasets/commit" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="file_hash" value="{{ preview.file_hash_sha256 }}">
+        
+        <div class="form-group">
+          <label class="form-label">Dataset Name</label>
+          <input type="text" name="dataset_name" class="form-control" required value="Lake Toba {{ preview.file_name }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Provenance Source Authority</label>
+          <input type="text" name="provenance_source" class="form-control" required placeholder="e.g. BPS North Sumatra or Hotel Association">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Source URL / Documentation Reference</label>
+          <input type="url" name="source_url" class="form-control" placeholder="https://...">
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button type="submit" class="btn btn-emerald">Commit Ingestion & Process Records</button>
+          <a href="/datasets/upload" class="btn btn-outline">Cancel / Re-upload</a>
+        </div>
+      </form>
+    </div>
+
+  {% else %}
+    <!-- Upload Form -->
+    <div class="card">
+      <form action="/datasets/upload" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div class="form-group">
+          <label class="form-label">Select CSV File (UTF-8)</label>
+          <input type="file" name="csv_file" accept=".csv" class="form-control" required>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 20px;">
+          <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 6px;">Expected Column Format:</h4>
+          <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+            <code>date</code> (YYYY-MM-DD), <code>destination_code</code> (PARAPAT, TUKTUK, BALIGE, TONGGING, PANGURURAN, SILANGIT), <code>visitors_domestic</code>, <code>visitors_international</code>, <code>hotel_occupancy_rate</code>, <code>avg_daily_rate_idr</code>, <code>total_revenue_idr</code>.
+          </p>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Upload & Preview Data</button>
+      </form>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

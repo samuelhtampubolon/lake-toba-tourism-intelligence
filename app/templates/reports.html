@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Executive Reports & Exports | Lake Toba Tourism Intelligence{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+  <div>
+    <h1 style="font-size: 24px; font-weight: 700;">Executive Reports & Safe Data Exports</h1>
+    <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+      Compile decision briefs, export CSV records with formula-injection defenses, and maintain reproducible analysis logs.
+    </p>
+  </div>
+  <div>
+    {% if dataset %}
+      <a href="/reports/export-csv?dataset_id={{ dataset.id }}" class="btn btn-emerald">Download Safe CSV (Formula Neutralized)</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid-cols-2" style="margin-bottom: 24px;">
+  <!-- Generate New Report Form -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Generate Decision Brief Report</h2>
+    </div>
+
+    <form action="/reports/generate" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+      <div class="form-group">
+        <label class="form-label">Report Title</label>
+        <input type="text" name="title" class="form-control" required value="Lake Toba Regional Tourism Outlook">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Report Type</label>
+        <select name="report_type" class="form-control">
+          <option value="Executive Brief">Executive Brief</option>
+          <option value="Demand & Forecast Analysis">Demand & Forecast Analysis</option>
+          <option value="Marketing Scenario Impact">Marketing Scenario Impact</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Analyst Strategic Notes & Recommendations</label>
+        <textarea name="analyst_notes" class="form-control" rows="3" placeholder="Enter findings, seasonal capacity warnings, or policy recommendations..."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Compile & Archive Report</button>
+    </form>
+  </div>
+
+  <!-- Security & Formula Injection Guidance Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Data Export Governance & Integrity</h2>
+      <span class="badge" style="background: rgba(52, 211, 153, 0.15); color: var(--accent-emerald);">OWASP ASVS Guarded</span>
+    </div>
+
+    <ul style="font-size: 13px; color: var(--text-muted); line-height: 1.8; padding-left: 20px;">
+      <li><strong>Formula Injection Defense:</strong> All exported cells beginning with formula triggers (<code>=</code>, <code>+</code>, <code>-</code>, <code>@</code>, tab, carriage return) are automatically sanitized with leading quote neutralizers.</li>
+      <li><strong>Allowlisted Columns:</strong> Export streams strictly emit validated tourism metrics, omitting sensitive user credentials or internal database tokens.</li>
+      <li><strong>Immutable Provenance:</strong> Reports retain dataset version reference (v{{ dataset.version if dataset else 1 }}) and generation UTC timestamp.</li>
+      <li><strong>Tenant-Local Isolation:</strong> No observation records or analyst commentary are ever transmitted to third-party cloud services.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Saved Reports List -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Compiled Management Reports Registry</h2>
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Report Title</th>
+        <th>Type</th>
+        <th>Dataset Version</th>
+        <th>Analyst Notes</th>
+        <th>Compiled UTC</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in reports %}
+        <tr>
+          <td><strong>{{ r.title }}</strong></td>
+          <td><span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">{{ r.report_type }}</span></td>
+          <td>v{{ r.dataset_version }}</td>
+          <td style="max-width: 380px; color: var(--text-muted);">{{ r.analyst_notes or 'No notes provided' }}</td>
+          <td style="font-size: 12px; color: var(--text-muted);">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">
+            No compiled reports yet. Use the form above to generate your first executive brief.
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

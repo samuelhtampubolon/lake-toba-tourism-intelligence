@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Audit Trail | Lake Toba Tourism Intelligence{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 700;">Append-Only System Audit Trail</h1>
+  <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+    Chronological security and governance record of high-impact state changes, dataset modifications, and analytical exports.
+  </p>
+</div>
+
+<div class="card">
+  <div style="overflow-x: auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Timestamp (UTC)</th>
+          <th>Action Type</th>
+          <th>Target Entity</th>
+          <th>Entity ID</th>
+          <th>User ID</th>
+          <th>Event Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for evt in audit_events %}
+          <tr>
+            <td style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted);">
+              {{ evt.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+            </td>
+            <td>
+              <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">
+                {{ evt.action }}
+              </span>
+            </td>
+            <td>{{ evt.entity_name }}</td>
+            <td style="font-family: var(--font-mono); font-size: 11px; color: var(--text-faint);">
+              {{ evt.entity_id[:8] if evt.entity_id else 'N/A' }}...
+            </td>
+            <td style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+              {{ evt.user_id[:8] if evt.user_id else 'System' }}
+            </td>
+            <td style="font-size: 12px; color: var(--text-muted); max-width: 350px; word-break: break-all;">
+              {{ evt.details_json or '{}' }}
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
+              No audit events recorded yet.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

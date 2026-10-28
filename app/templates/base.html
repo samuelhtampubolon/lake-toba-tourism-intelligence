@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Lake Toba Tourism Intelligence{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <a href="/" class="brand-link">
+          <span class="brand-icon">🏔️</span>
+          <div>
+            <div class="brand-name">Lake Toba Tourism Intelligence</div>
+            <div class="brand-tagline">Local-First Decision Support & Demand Forecasting</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="main-nav">
+        {% if user %}
+          <a href="/dashboard" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a>
+          <a href="/datasets" class="nav-item {% if active_page == 'datasets' %}active{% endif %}">Datasets</a>
+          <a href="/forecasts" class="nav-item {% if active_page == 'forecasts' %}active{% endif %}">Forecast Engine</a>
+          <a href="/scenarios" class="nav-item {% if active_page == 'scenarios' %}active{% endif %}">Scenarios & ROI</a>
+          <a href="/segments" class="nav-item {% if active_page == 'segments' %}active{% endif %}">Segments</a>
+          <a href="/reports" class="nav-item {% if active_page == 'reports' %}active{% endif %}">Reports</a>
+          {% if user.role == 'business_owner' %}
+            <a href="/admin/audit-logs" class="nav-item {% if active_page == 'audit' %}active{% endif %}">Audit Trail</a>
+          {% endif %}
+        {% endif %}
+      </nav>
+
+      <div class="user-control">
+        {% if user %}
+          <span class="user-badge role-{{ user.role }}">{{ user.username }} ({{ user.role }})</span>
+          <form action="/logout" method="POST" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit" class="btn btn-sm btn-outline">Logout</button>
+          </form>
+        {% else %}
+          <a href="/login" class="btn btn-sm btn-primary">Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    {% if flash_message %}
+      <div class="alert alert-{{ flash_type or 'info' }}">
+        {{ flash_message }}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div>Lake Toba Tourism Intelligence Platform &bull; Offline & Local-First Architectural Edition</div>
+      <div class="footer-links">
+        <span>Region: North Sumatra, Indonesia (Samosir, Simalungun, Toba, Karo)</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

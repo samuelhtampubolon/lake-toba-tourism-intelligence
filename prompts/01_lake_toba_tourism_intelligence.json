@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "document_type": "AI coding-agent execution prompt",
+    "format": "valid JSON; UTF-8; plain-text .txt file; no Markdown fences",
+    "prompt_id": "01_lake_toba_tourism_intelligence",
+    "project_name": "Lake Toba Tourism Intelligence",
+    "repository_name": "lake-toba-tourism-intelligence",
+    "created_date": "2026-10-27",
+    "intended_consumers": [
+      "AI CLI coding agents",
+      "AI IDE coding agents",
+      "human engineering reviewer"
+    ],
+    "line_count_requirement": "The saved file itself must contain between 888 and 999 physical lines inclusive.",
+    "primary_execution_goal": "Implement, test, document, and verify a complete working local-first software repository; do not merely describe how to build it."
+  },
+  "project_brief": {
+    "purpose": "Build a secure, local-first decision-support application for tourism demand analysis, customer segmentation, revenue forecasting, and marketing-budget scenarios for the Lake Toba region.",
+    "problem_statement": "Tourism operators may have fragmented visitor, booking, seasonality, price, and campaign data; decisions are often made without traceable comparisons or uncertainty estimates.",
+    "primary_users": [
+      "tourism business owner",
+      "tourism analyst",
+      "marketing manager",
+      "read-only executive"
+    ],
+    "core_workflows": [
+      "Create or import a tourism dataset with provenance metadata.",
+      "Validate records and review data-quality warnings.",
+      "Explore visitor demand, bookings, revenue, seasonality, and customer segments.",
+      "Train and compare a lightweight demand forecast against a baseline.",
+      "Run budget and pricing scenarios with explicit assumptions.",
+      "Export a management report with recommendations and limitations."
+    ]
+  }
+}

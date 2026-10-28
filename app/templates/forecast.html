@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Forecast Engine | Lake Toba Tourism Intelligence{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 700;">Tourism Demand Forecasting Engine</h1>
+  <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+    Chronological validation comparing lightweight Damped Trend models against the mandated Seasonal-Naive benchmark.
+  </p>
+</div>
+
+<!-- Forecast Run Controls -->
+<div class="card" style="margin-bottom: 24px;">
+  <form action="/forecasts/run" method="POST" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+    <div class="form-group" style="margin-bottom: 0; min-width: 220px;">
+      <label class="form-label">Target Forecast Metric</label>
+      <select name="target_metric" class="form-control">
+        <option value="total_visitors" {% if target_metric == 'total_visitors' %}selected{% endif %}>Total Visitor Volume (Pax)</option>
+        <option value="total_revenue_idr" {% if target_metric == 'total_revenue_idr' %}selected{% endif %}>Regional Tourism Yield (IDR)</option>
+      </select>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 0; min-width: 180px;">
+      <label class="form-label">Projection Horizon</label>
+      <select name="horizon_days" class="form-control">
+        <option value="14" {% if horizon_days == 14 %}selected{% endif %}>14 Days Ahead</option>
+        <option value="30" {% if horizon_days == 30 %}selected{% endif %}>30 Days Ahead</option>
+        <option value="60" {% if horizon_days == 60 %}selected{% endif %}>60 Days Ahead</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="height: 42px;">Execute Chronological Model Fit</button>
+  </form>
+</div>
+
+{% if forecast_result %}
+  {% if not forecast_result.success %}
+    <div class="alert alert-danger">{{ forecast_result.error }}</div>
+  {% else %}
+    <!-- Model Comparison Metrics Cards -->
+    <div class="grid-cols-4">
+      <div class="card metric-card">
+        <div class="metric-label">Model Evaluation Status</div>
+        <div class="metric-val" style="font-size: 18px; color: {% if forecast_result.model_won %}var(--accent-emerald){% else %}var(--accent-amber){% endif %};">
+          {% if forecast_result.model_won %}Candidate Won{% else %}Baseline Won{% endif %}
+        </div>
+        <div class="metric-sub">{{ forecast_result.comparison_status }}</div>
+      </div>
+
+      <div class="card metric-card emerald">
+        <div class="metric-label">Candidate Model MAE</div>
+        <div class="metric-val">{{ "{:,.1f}".format(forecast_result.candidate_mae) }}</div>
+        <div class="metric-sub">Mean Absolute Error on Validation Split</div>
+      </div>
+
+      <div class="card metric-card purple">
+        <div class="metric-label">Baseline Seasonal-Naive MAE</div>
+        <div class="metric-val">{{ "{:,.1f}".format(forecast_result.baseline_mae) }}</div>
+        <div class="metric-sub">Lag-7 Weekly Seasonal Repeat Benchmark</div>
+      </div>
+
+      <div class="card metric-card amber">
+        <div class="metric-label">MASE (Scaled Error)</div>
+        <div class="metric-val">{{ forecast_result.candidate_mase }}</div>
+        <div class="metric-sub">MASE &lt; 1.0 indicates outperforming naive</div>
+      </div>
+    </div>
+
+    <!-- Chronological Split & Limitations Banner -->
+    <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--accent-cyan);">
+      <div style="font-size: 13px; font-weight: 600; color: var(--accent-cyan); margin-bottom: 4px;">Chronological Train-Validation Architecture:</div>
+      <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+        Training Window: <strong>{{ forecast_result.train_period }}</strong> &bull; Validation Window: <strong>{{ forecast_result.validation_period }}</strong>.<br>
+        <strong>Methodological Note:</strong> Time series observations are partitioned strictly by calendar sequence without random shuffling, preventing future lookahead leakage into model parameters.
+      </p>
+      <div style="margin-top: 8px; font-size: 11px; color: var(--text-faint);">
+        <em>Caveats:</em> {{ forecast_result.limitations }}
+      </div>
+    </div>
+
+    <!-- Projections Table -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Forward Forecast Projections with 95% Confidence Intervals</h2>
+        <span class="badge" style="background: rgba(52, 211, 153, 0.15); color: var(--accent-emerald);">{{ forecast_result.horizon_days }} Days Horizon</span>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Lower Bound (95%)</th>
+              <th>Predicted Target</th>
+              <th>Upper Bound (95%)</th>
+              <th>Baseline Benchmark</th>
+              <th>Model Delta vs Baseline</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pt in forecast_result.points %}
+              <tr>
+                <td><strong>{{ pt.date }}</strong></td>
+                <td style="color: var(--text-muted); font-family: var(--font-mono);">{{ "{:,.0f}".format(pt.lower_95) }}</td>
+                <td style="color: var(--accent-cyan); font-weight: 700; font-family: var(--font-mono);">{{ "{:,.0f}".format(pt.predicted) }}</td>
+                <td style="color: var(--text-muted); font-family: var(--font-mono);">{{ "{:,.0f}".format(pt.upper_95) }}</td>
+                <td style="color: var(--text-faint); font-family: var(--font-mono);">{{ "{:,.0f}".format(pt.baseline) }}</td>
+                <td style="font-family: var(--font-mono); color: {% if pt.predicted >= pt.baseline %}var(--accent-emerald){% else %}var(--accent-rose){% endif %};">
+                  {% if pt.predicted >= pt.baseline %}+{% endif %}{{ "{:,.0f}".format(pt.predicted - pt.baseline) }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📈</div>
+    <h2 class="empty-title">Select Parameters to Run Tourism Forecast</h2>
+    <p class="empty-desc">Choose a forecast horizon (14 to 60 days) to train the lightweight model and evaluate against the Seasonal-Naive baseline.</p>
+  </div>
+{% endif %}
+{% endblock %}

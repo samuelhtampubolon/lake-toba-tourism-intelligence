@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Sign In | Lake Toba Tourism Intelligence{% endblock %}
+
+{% block content %}
+<div style="max-width: 440px; margin: 40px auto;">
+  <div class="card">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <div style="font-size: 36px; margin-bottom: 8px;">🏔️</div>
+      <h1 class="card-title" style="font-size: 20px;">Lake Toba Intelligence Portal</h1>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Sign in with your role-authorized credentials</p>
+    </div>
+
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form action="/login" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <input type="text" id="username" name="username" class="form-control" required autofocus placeholder="e.g. admin or analyst">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" name="password" class="form-control" required placeholder="Enter password">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Authenticate & Enter</button>
+    </form>
+
+    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted);">
+      <p><strong>Local Setup Note:</strong> First-time operator? Initialize administrator access with the CLI command:</p>
+      <code style="display: block; background: #000; padding: 6px 8px; border-radius: 4px; margin-top: 6px; font-family: var(--font-mono); color: var(--accent-emerald);">
+        python scripts/cli.py bootstrap-admin
+      </code>
+    </div>
+  </div>
+</div>
+{% endblock %}

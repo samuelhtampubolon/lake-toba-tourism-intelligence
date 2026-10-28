@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Data Quality Profile | Lake Toba Tourism Intelligence{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <a href="/datasets" style="font-size: 13px; color: var(--accent-cyan); text-decoration: none;">&larr; Back to Datasets</a>
+  <h1 style="font-size: 24px; font-weight: 700; margin-top: 8px;">Data Quality Profile: {{ dataset.name }}</h1>
+  <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+    Automated diagnostic integrity checks for null values, key uniqueness, impossible bounds, and continuous calendar coverage.
+  </p>
+</div>
+
+<div class="grid-cols-4">
+  <div class="card metric-card">
+    <div class="metric-label">Overall Integrity Status</div>
+    <div class="metric-val" style="color: {% if profile.status == 'EXCELLENT' %}var(--accent-emerald){% else %}var(--accent-amber){% endif %}; font-size: 20px;">
+      {{ profile.status }}
+    </div>
+    <div class="metric-sub">{{ profile.total_records }} Total Records Evaluated</div>
+  </div>
+
+  <div class="card metric-card emerald">
+    <div class="metric-label">Calendar Coverage</div>
+    <div class="metric-val">{{ profile.coverage_percentage }}%</div>
+    <div class="metric-sub">{{ profile.actual_days }} of {{ profile.expected_days }} Expected Days</div>
+  </div>
+
+  <div class="card metric-card amber">
+    <div class="metric-label">Duplicate Keys Detected</div>
+    <div class="metric-val">{{ profile.duplicate_keys }}</div>
+    <div class="metric-sub">(destination_id, date) tuples</div>
+  </div>
+
+  <div class="card metric-card purple">
+    <div class="metric-label">Invalid Bound Counts</div>
+    <div class="metric-val">{{ profile.negative_values + profile.impossible_occupancy }}</div>
+    <div class="metric-sub">Negatives or occupancy &gt; 100%</div>
+  </div>
+</div>
+
+<div class="grid-cols-2">
+  <!-- Null Analysis Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Null & Missing Field Frequency</h2>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Metric Field</th>
+          <th>Missing / Null Count</th>
+          <th>Health Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for field, cnt in profile.null_counts.items() %}
+          <tr>
+            <td><code>{{ field }}</code></td>
+            <td><strong>{{ cnt }}</strong></td>
+            <td>
+              {% if cnt == 0 %}
+                <span class="badge" style="background: rgba(52, 211, 153, 0.15); color: var(--accent-emerald);">Complete (0%)</span>
+              {% else %}
+                <span class="badge" style="background: rgba(248, 113, 113, 0.15); color: var(--accent-rose);">{{ cnt }} Missing</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Date Gaps Analysis Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Time-Series Continuity & Date Gaps</h2>
+      <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">{{ profile.total_gaps_count }} Gaps</span>
+    </div>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+      Observation range: <strong>{{ profile.earliest_date }}</strong> to <strong>{{ profile.latest_date }}</strong>.
+    </p>
+
+    {% if profile.date_gaps %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Gap Start</th>
+            <th>Gap End</th>
+            <th>Missing Days</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gap in profile.date_gaps %}
+            <tr>
+              <td>{{ gap.gap_start }}</td>
+              <td>{{ gap.gap_end }}</td>
+              <td><strong>{{ gap.missing_days }} days</strong></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div style="padding: 24px; text-align: center; color: var(--accent-emerald); font-size: 13px;">
+        &check; No date gaps detected. Continuous calendar coverage verified across observation window.
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Scenarios & Budget Simulation | Lake Toba Tourism Intelligence{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 700;">Marketing Budget & Pricing Scenario Simulator</h1>
+  <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+    Simulate expected visitor volume, gross contribution yield, and marketing ROI with explicit assumption parameters.
+  </p>
+</div>
+
+<div class="grid-cols-2">
+  <!-- Interactive Simulator Form -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Scenario Parameters & Assumptions</h2>
+      <span class="badge" style="background: rgba(251, 191, 36, 0.15); color: var(--accent-amber);">Simulation Only</span>
+    </div>
+
+    <form action="/scenarios/save" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      
+      <div class="form-group">
+        <label class="form-label">Scenario Name</label>
+        <input type="text" name="name" class="form-control" required placeholder="e.g. Q3 Lake Toba Festival Campaign Push">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description / Hypothesis</label>
+        <textarea name="description" class="form-control" rows="2" placeholder="e.g. Test impact of digital marketing blitz combined with 5% premium ADR during cultural regatta."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Incremental Marketing Budget (IDR)</label>
+        <input type="number" id="spend_input" name="marketing_spend_idr" class="form-control" required min="0" step="1000000" value="250000000">
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Digital ads, influencers, and tourism trade roadshows.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Average Price / ADR Adjustment (%)</label>
+        <input type="number" id="price_input" name="price_change_pct" class="form-control" required min="-50" max="100" step="1" value="5">
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Positive = price increase, Negative = promotional discount.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Seasonality Demand Shift Factor</label>
+        <input type="number" id="season_input" name="seasonality_multiplier" class="form-control" required min="0.5" max="3.0" step="0.05" value="1.15">
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">1.0 = normal baseline; &gt;1.0 = peak event / holiday surge.</div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button type="submit" class="btn btn-emerald" style="width: 100%;">Save Scenario to Registry</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Real-Time Simulated Output Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Live Mathematical Projection</h2>
+      <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">Diminishing Returns Log Curve</span>
+    </div>
+
+    <div style="margin-bottom: 20px; padding: 14px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+      <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Simulated Regional Tourism Yield</div>
+      <div style="font-size: 30px; font-weight: 700; font-family: var(--font-mono); color: var(--accent-emerald); margin: 4px 0;">
+        IDR {{ "{:,.0f}".format(sim.simulated_revenue_idr / 1000000.0) }} M
+      </div>
+      <div style="font-size: 12px; color: var(--accent-cyan);">
+        Delta vs Baseline: +IDR {{ "{:,.0f}".format(sim.revenue_delta_idr / 1000000.0) }} M
+      </div>
+    </div>
+
+    <div class="grid-cols-2" style="margin-bottom: 16px;">
+      <div style="padding: 12px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+        <div style="font-size: 11px; color: var(--text-muted);">Simulated Visitors</div>
+        <div style="font-size: 20px; font-weight: 700; font-family: var(--font-mono);">{{ "{:,}".format(sim.simulated_visitors) }}</div>
+        <div style="font-size: 11px; color: var(--accent-emerald);">Delta: +{{ "{:,}".format(sim.visitor_delta) }}</div>
+      </div>
+
+      <div style="padding: 12px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+        <div style="font-size: 11px; color: var(--text-muted);">Gross Contribution</div>
+        <div style="font-size: 20px; font-weight: 700; font-family: var(--font-mono); color: {% if sim.gross_contribution_idr >= 0 %}var(--accent-emerald){% else %}var(--accent-rose){% endif %};">
+          IDR {{ "{:,.0f}".format(sim.gross_contribution_idr / 1000000.0) }} M
+        </div>
+        <div style="font-size: 11px; color: var(--text-muted);">Yield Delta - Marketing Spend</div>
+      </div>
+    </div>
+
+    <div style="padding: 16px; background: rgba(56, 189, 248, 0.08); border: 1px solid var(--border-glow); border-radius: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Simulated Marketing ROI</div>
+          <div style="font-size: 28px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-cyan);">
+            {{ sim.roi_percentage }}%
+          </div>
+        </div>
+        <div style="font-size: 11px; color: var(--text-faint); max-width: 220px; text-align: right;">
+          Zero spend safety enabled; ROI formula handles $0 budget gracefully.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 16px; font-size: 11px; color: var(--text-faint);">
+      <em>Disclaimer:</em> {{ sim.disclaimer }}
+    </div>
+  </div>
+</div>
+
+<!-- Saved Scenarios Registry -->
+<div class="card" style="margin-top: 24px;">
+  <div class="card-header">
+    <h2 class="card-title">Saved Scenarios Comparison Registry</h2>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Scenario Name</th>
+          <th>Marketing Spend</th>
+          <th>Simulated Yield</th>
+          <th>Gross Contribution</th>
+          <th>Simulated ROI</th>
+          <th>Created Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sc in saved_scenarios %}
+          <tr>
+            <td>
+              <strong>{{ sc.name }}</strong>
+              <div style="font-size: 11px; color: var(--text-muted);">{{ sc.description or 'No description' }}</div>
+            </td>
+            <td style="font-family: var(--font-mono);">IDR {{ "{:,.0f}".format(sc.total_marketing_spend_idr / 1000000.0) }} M</td>
+            <td style="font-family: var(--font-mono); color: var(--accent-emerald);">IDR {{ "{:,.0f}".format(sc.simulated_revenue_idr / 1000000.0) }} M</td>
+            <td style="font-family: var(--font-mono); color: {% if sc.gross_contribution_idr >= 0 %}var(--accent-emerald){% else %}var(--accent-rose){% endif %};">
+              IDR {{ "{:,.0f}".format(sc.gross_contribution_idr / 1000000.0) }} M
+            </td>
+            <td>
+              <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); font-size: 12px;">
+                {{ sc.roi_percentage }}%
+              </span>
+            </td>
+            <td style="font-size: 12px; color: var(--text-muted);">{{ sc.created_at.strftime('%Y-%m-%d') }}</td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
+              No saved scenarios yet. Use the simulator above to create your first scenario.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lake Toba Tourism Intelligence | Samuel H. Tampubolon</title>
+  <meta name="description" content="Local-first decision-support platform for tourism demand analysis, customer segmentation, revenue forecasting, and marketing-budget scenarios for the Lake Toba region.">
+  <meta name="author" content="Samuel H. Tampubolon">
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'none'">
+
+  <style>
+    :root {
+      --bg-primary: #070b14;
+      --bg-secondary: #0d1527;
+      --bg-card: rgba(18, 27, 49, 0.75);
+      --bg-card-hover: rgba(28, 41, 75, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(56, 189, 248, 0.4);
+
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #34d399;
+      --accent-purple: #c084fc;
+      --accent-amber: #fbbf24;
+      --accent-rose: #f87171;
+      --accent-blue: #60a5fa;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --shadow-glow: 0 0 35px rgba(56, 189, 248, 0.15);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.09) 0%, transparent 40%),
+        radial-gradient(circle at 85% 65%, rgba(52, 211, 153, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(192, 132, 252, 0.06) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header / Nav */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(7, 11, 20, 0.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: all 0.3s ease;
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 72px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .brand-text h1 {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover { color: var(--accent-cyan); }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--accent-emerald);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .badge-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .btn-github {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-github:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 64px 0 36px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent-cyan);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      font-family: var(--font-mono);
+    }
+
+    .hero-title {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      max-width: 1020px;
+      margin: 0 auto 18px;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-title .gradient-text {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 820px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan), #0284c7);
+      color: #041226;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.6);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--accent-cyan);
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 22px;
+      text-align: left;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent-cyan);
+    }
+
+    .metric-card.emerald::after { background: var(--accent-emerald); }
+    .metric-card.amber::after { background: var(--accent-amber); }
+    .metric-card.purple::after { background: var(--accent-purple); }
+
+    .metric-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-glow);
+      box-shadow: var(--shadow-card);
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .metric-sub {
+      font-size: 12px;
+      color: var(--accent-cyan);
+    }
+
+    /* Sections Common */
+    .section-wrap {
+      padding: 48px 0;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .section-header {
+      margin-bottom: 32px;
+      text-align: left;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 15px;
+      max-width: 780px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px;
+      backdrop-filter: blur(14px);
+    }
+
+    /* Destination Tabs */
+    .dest-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .dest-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dest-btn.active, .dest-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-cyan);
+      color: var(--text-main);
+    }
+
+    .dest-detail-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    /* Interactive Chart Canvas / SVG */
+    .chart-container {
+      position: relative;
+      background: #060a12;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .chart-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .grain-btns {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .grain-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .grain-btn.active {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+
+    /* Sliders & Simulator */
+    .slider-group {
+      margin-bottom: 20px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .slider-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: rgba(13, 21, 39, 0.5);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .badge-cyan { background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
+    .badge-emerald { background: rgba(52, 211, 153, 0.15); color: var(--accent-emerald); border: 1px solid var(--accent-emerald); }
+    .badge-amber { background: rgba(251, 191, 36, 0.15); color: var(--accent-amber); border: 1px solid var(--accent-amber); }
+    .badge-rose { background: rgba(248, 113, 113, 0.15); color: var(--accent-rose); border: 1px solid var(--accent-rose); }
+    .badge-purple { background: rgba(192, 132, 252, 0.15); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 40px 0;
+      background: #04070d;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 32px; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .dest-detail-card { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-inner">
+      <a href="#" class="brand">
+        <div class="brand-icon">🏔️</div>
+        <div class="brand-text">
+          <h1>Lake Toba Tourism Intelligence</h1>
+          <span>Samuel H. Tampubolon &bull; v1.0.0</span>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#destinations" class="nav-link">Destinations</a>
+        <a href="#time-series" class="nav-link">Time Series</a>
+        <a href="#seasonality" class="nav-link">Seasonality</a>
+        <a href="#forecast" class="nav-link">Forecasting</a>
+        <a href="#scenarios" class="nav-link">Scenarios & ROI</a>
+        <a href="#segments" class="nav-link">Segments</a>
+        <a href="#architecture" class="nav-link">Architecture</a>
+      </nav>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span class="badge-status">Local-First Verified</span>
+        <a href="https://github.com/samuelhtampubolon/lake-toba-tourism-intelligence" target="_blank" rel="noopener" class="btn-github">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-eyebrow">
+        <span>🏛️ Super-Priority Destination Analytics</span>
+        <span>&bull;</span>
+        <span>North Sumatra, Indonesia</span>
+      </div>
+
+      <h1 class="hero-title">
+        Predicting Demand, Hotel Yield &amp; <span class="gradient-text">Seasonal Economics</span> for Lake Toba
+      </h1>
+
+      <p class="hero-subtitle">
+        Local-first decision-support platform designed for tourism authorities, hotel operators, and analysts.
+        Featuring chronological Seasonal-Naive benchmarks, Holt-Winters damped trend forecasting, and interactive marketing-budget scenario simulations across Parapat, Samosir, Balige, and Silangit.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#scenarios" class="btn-primary">Launch Budget & ROI Simulator</a>
+        <a href="#forecast" class="btn-outline">Inspect Forecasting Engine</a>
+        <a href="#architecture" class="btn-outline">View Architecture & Security</a>
+      </div>
+
+      <!-- KPI Metrics Cards -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Regional Annual Footfall</div>
+          <div class="metric-value">4,386,400+</div>
+          <div class="metric-sub">83.4% Domestic &bull; 16.6% International</div>
+        </div>
+
+        <div class="metric-card emerald">
+          <div class="metric-label">Regional Tourism Yield</div>
+          <div class="metric-value">IDR 3.42 Trillion</div>
+          <div class="metric-sub">Hotels, Dining, Transit & Geoparks</div>
+        </div>
+
+        <div class="metric-card amber">
+          <div class="metric-label">Average Hotel Occupancy</div>
+          <div class="metric-value">62.4%</div>
+          <div class="metric-sub">Peak Festival Surge: 94.2%</div>
+        </div>
+
+        <div class="metric-card purple">
+          <div class="metric-label">Peak Season ADR Multiplier</div>
+          <div class="metric-value">2.14x</div>
+          <div class="metric-sub">F1H2O Balige & Year-End Holidays</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Destinations Section -->
+  <section id="destinations" class="section-wrap">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Geographical Registry</span>
+        <h2 class="section-title">Lake Toba Destination Intelligence Hubs</h2>
+        <p class="section-desc">
+          Compare traveler footfall, lodging capacity, international mix, and average daily rates across 6 administrative regencies.
+        </p>
+      </div>
+
+      <!-- Destination Tab Buttons -->
+      <div class="dest-tabs" id="dest-tabs-container">
+        <button class="dest-btn active" onclick="selectDestination('PARAPAT')">Parapat Resort (Simalungun)</button>
+        <button class="dest-btn" onclick="selectDestination('TUKTUK')">Tuktuk Peninsula (Samosir)</button>
+        <button class="dest-btn" onclick="selectDestination('BALIGE')">Balige Waterfront (Toba)</button>
+        <button class="dest-btn" onclick="selectDestination('TONGGING')">Tongging & Sipiso-piso (Karo)</button>
+        <button class="dest-btn" onclick="selectDestination('PANGURURAN')">Pangururan Springs (Samosir)</button>
+        <button class="dest-btn" onclick="selectDestination('SILANGIT')">Silangit Gateway (North Tapanuli)</button>
+      </div>
+
+      <!-- Dynamic Destination Card -->
+      <div class="dest-detail-card" id="dest-detail-view">
+        <div>
+          <span class="badge badge-cyan" id="dest-badge">Lakeside / Port Hub</span>
+          <h3 style="font-size: 22px; font-weight: 700; margin: 8px 0;" id="dest-title">Parapat Lakeside Resort</h3>
+          <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;" id="dest-desc">
+            Historic gateway harbor connecting mainland North Sumatra to Samosir Island with lakeside hotels and ferry terminals.
+          </p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="dest-tags">
+            <span class="badge badge-emerald">Ferry Terminals</span>
+            <span class="badge badge-purple">Lakeside Resorts</span>
+            <span class="badge badge-amber">Souvenir Markets</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div style="padding: 16px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Annual Visitors</div>
+            <div style="font-size: 24px; font-weight: 700; font-family: var(--font-mono); color: var(--accent-cyan);" id="dest-visitors">1,022,000</div>
+            <div style="font-size: 11px; color: var(--text-muted);" id="dest-intl">14.2% International</div>
+          </div>
+
+          <div style="padding: 16px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Room Capacity</div>
+            <div style="font-size: 24px; font-weight: 700; font-family: var(--font-mono); color: var(--accent-emerald);" id="dest-rooms">2,200 Rooms</div>
+            <div style="font-size: 11px; color: var(--text-muted);" id="dest-occ">68.5% Avg Occupancy</div>
+          </div>
+
+          <div style="padding: 16px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Base ADR</div>
+            <div style="font-size: 22px; font-weight: 700; font-family: var(--font-mono); color: var(--accent-amber);" id="dest-adr">IDR 650,000</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Standard Room / Night</div>
+          </div>
+
+          <div style="padding: 16px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Annual Yield</div>
+            <div style="font-size: 22px; font-weight: 700; font-family: var(--font-mono); color: var(--accent-purple);" id="dest-revenue">IDR 840 Billion</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Direct Tourism Revenue</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Time Series Section -->
+  <section id="time-series" class="section-wrap">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Interactive Time-Series Aggregation</span>
+        <h2 class="section-title">Regional Footfall & Yield Evolution (2024–2025)</h2>
+        <p class="section-desc">
+          Dynamically aggregate observations across daily, weekly, and monthly observation grains with deterministic caching.
+        </p>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-controls">
+          <div>
+            <span style="font-size: 13px; color: var(--text-muted); margin-right: 10px;">Select Observation Grain:</span>
+            <div class="grain-btns" style="display: inline-flex;">
+              <button class="grain-btn" onclick="setChartGrain('daily', this)">Daily</button>
+              <button class="grain-btn active" onclick="setChartGrain('weekly', this)">Weekly</button>
+              <button class="grain-btn" onclick="setChartGrain('monthly', this)">Monthly</button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; font-size: 12px;">
+            <span style="display: flex; align-items: center; gap: 6px;">
+              <span style="width: 12px; height: 12px; background: var(--accent-cyan); border-radius: 2px;"></span>
+              Total Footfall (Pax)
+            </span>
+            <span style="display: flex; align-items: center; gap: 6px;">
+              <span style="width: 12px; height: 12px; background: var(--accent-emerald); border-radius: 2px;"></span>
+              Tourism Yield (IDR M)
+            </span>
+          </div>
+        </div>
+
+        <!-- SVG Interactive Chart -->
+        <svg id="timeSeriesSvg" viewBox="0 0 1000 360" style="width: 100%; height: 360px; overflow: visible;">
+          <!-- Rendered via JS -->
+        </svg>
+
+        <div id="chartTooltip" style="display: none; position: absolute; background: rgba(7, 11, 20, 0.95); border: 1px solid var(--accent-cyan); border-radius: 6px; padding: 8px 12px; font-size: 11px; font-family: var(--font-mono); pointer-events: none; z-index: 10;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seasonality & Calendar Section -->
+  <section id="seasonality" class="section-wrap">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Calendar Intelligence</span>
+        <h2 class="section-title">Batak Cultural Events & Seasonal Multipliers</h2>
+        <p class="section-desc">
+          Lake Toba travel patterns follow distinct cultural festival waves, international regattas, and school holiday peaks.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Monthly Seasonality Heatmap</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Avg Daily Footfall</th>
+                  <th>Season Tier</th>
+                  <th>Key Calendar Event</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>January</strong></td>
+                  <td>11,400 pax</td>
+                  <td><span class="badge badge-amber">High Season</span></td>
+                  <td>New Year Holiday Extension</td>
+                </tr>
+                <tr>
+                  <td><strong>February</strong></td>
+                  <td>15,800 pax</td>
+                  <td><span class="badge badge-rose">Peak Event</span></td>
+                  <td>F1H2O UIM World Championship Balige</td>
+                </tr>
+                <tr>
+                  <td><strong>March - May</strong></td>
+                  <td>8,900 pax</td>
+                  <td><span class="badge" style="background: rgba(255,255,255,0.06);">Regular</span></td>
+                  <td>Easter & Low Rainfall Trekking</td>
+                </tr>
+                <tr>
+                  <td><strong>June - July</strong></td>
+                  <td>14,200 pax</td>
+                  <td><span class="badge badge-rose">Peak Event</span></td>
+                  <td>Lake Toba Festival & School Holidays</td>
+                </tr>
+                <tr>
+                  <td><strong>August - September</strong></td>
+                  <td>9,500 pax</td>
+                  <td><span class="badge" style="background: rgba(255,255,255,0.06);">Regular</span></td>
+                  <td>Dry Season Ecotourism & Cycling</td>
+                </tr>
+                <tr>
+                  <td><strong>October - November</strong></td>
+                  <td>7,100 pax</td>
+                  <td><span class="badge" style="background: rgba(148, 163, 184, 0.15);">Low Season</span></td>
+                  <td>Monsoon Season / Maintenance Window</td>
+                </tr>
+                <tr>
+                  <td><strong>December</strong></td>
+                  <td>16,400 pax</td>
+                  <td><span class="badge badge-rose">Peak Event</span></td>
+                  <td>Christmas Celebrations & Year-End Gala</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Day-of-Week Distribution (Weekend Multiplier)</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+            Medan and Pekanbaru weekend getaway travelers create a sharp <strong>2.14x surge</strong> between Friday evening and Sunday afternoon compared to Monday-Thursday baselines.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span>Monday - Thursday (Weekday Average)</span>
+                <span style="font-family: var(--font-mono); color: var(--text-muted);">6,200 pax / day</span>
+              </div>
+              <div style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 999px; overflow: hidden;">
+                <div style="width: 38%; height: 100%; background: var(--text-muted); border-radius: 999px;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span>Friday (Weekend Inflow & Check-ins)</span>
+                <span style="font-family: var(--font-mono); color: var(--accent-cyan);">11,800 pax / day</span>
+              </div>
+              <div style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 999px; overflow: hidden;">
+                <div style="width: 72%; height: 100%; background: var(--accent-cyan); border-radius: 999px;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span>Saturday (Peak Occupancy Day)</span>
+                <span style="font-family: var(--font-mono); color: var(--accent-emerald);">16,500 pax / day</span>
+              </div>
+              <div style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 999px; overflow: hidden;">
+                <div style="width: 100%; height: 100%; background: var(--accent-emerald); border-radius: 999px;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span>Sunday (Lakeside Leisure & Outflow)</span>
+                <span style="font-family: var(--font-mono); color: var(--accent-amber);">12,900 pax / day</span>
+              </div>
+              <div style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 999px; overflow: hidden;">
+                <div style="width: 78%; height: 100%; background: var(--accent-amber); border-radius: 999px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 24px; padding: 14px; background: rgba(56, 189, 248, 0.08); border-radius: 8px; font-size: 12px; color: var(--accent-cyan);">
+            💡 <strong>Revenue Optimization Insight:</strong> Dynamic pricing algorithms that lift room rates by 25-35% on Friday & Saturday capture 48% of total weekly gross operating profit.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Forecasting Engine Section -->
+  <section id="forecast" class="section-wrap">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Machine Learning & Time-Series Engine</span>
+        <h2 class="section-title">Demand Forecasting & Seasonal Baseline Comparison</h2>
+        <p class="section-desc">
+          Strict chronological train-validation partition preventing lookahead data leakage. Every candidate forecast is benchmarked against the mandated Seasonal-Naive baseline.
+        </p>
+      </div>
+
+      <div class="card" style="margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <span style="font-size: 13px; color: var(--text-muted);">Forecast Horizon:</span>
+            <select id="forecastHorizon" onchange="updateForecastSimulation()" style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 13px;">
+              <option value="14">14 Days Ahead</option>
+              <option value="30" selected>30 Days Ahead</option>
+              <option value="60">60 Days Ahead</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <span class="badge badge-emerald" id="modelStatusBadge">Candidate Model Won (MASE 0.82)</span>
+            <span class="badge badge-cyan">95% Confidence Band</span>
+          </div>
+        </div>
+
+        <div class="metrics-grid" style="margin: 20px 0 10px;">
+          <div class="metric-card" style="padding: 16px;">
+            <div class="metric-label">Candidate Model MAE</div>
+            <div class="metric-value" style="font-size: 22px;" id="valCandMae">482 pax</div>
+            <div class="metric-sub">Damped Trend with Seasonality</div>
+          </div>
+
+          <div class="metric-card purple" style="padding: 16px;">
+            <div class="metric-label">Baseline Seasonal-Naive MAE</div>
+            <div class="metric-value" style="font-size: 22px;" id="valBaseMae">588 pax</div>
+            <div class="metric-sub">Lag-7 Repeat Benchmark</div>
+          </div>
+
+          <div class="metric-card emerald" style="padding: 16px;">
+            <div class="metric-label">MASE (Mean Scaled Error)</div>
+            <div class="metric-value" style="font-size: 22px;" id="valMase">0.820</div>
+            <div class="metric-sub">&lt; 1.0 indicates beating baseline</div>
+          </div>
+
+          <div class="metric-card amber" style="padding: 16px;">
+            <div class="metric-label">Chronological Split</div>
+            <div class="metric-value" style="font-size: 22px;">700 / 30 Days</div>
+            <div class="metric-sub">Zero Lookahead Contamination</div>
+          </div>
+        </div>
+
+        <!-- SVG Forecast Canvas -->
+        <div style="background: #060a12; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px;">
+          <svg id="forecastSvg" viewBox="0 0 1000 300" style="width: 100%; height: 300px; overflow: visible;">
+            <!-- Rendered by JS -->
+          </svg>
+        </div>
+
+        <div style="margin-top: 16px; font-size: 11px; color: var(--text-faint);">
+          * Forecast bands denote 95% Gaussian interval (z=1.96) derived from validation residual variance. Projections assume baseline climatic patterns.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What-If Scenarios & ROI Section -->
+  <section id="scenarios" class="section-wrap">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Scenario Intelligence & Optimization</span>
+        <h2 class="section-title">Marketing Budget & Pricing Scenario Simulator</h2>
+        <p class="section-desc">
+          Test the sensitivity of regional tourism yield to promotional ad spend, room price increases, and cultural event multipliers.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Simulator Controls -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 18px; font-weight: 700;">Scenario Assumptions &amp; Levers</h3>
+            <span class="badge badge-amber">Interactive Model</span>
+          </div>
+
+          <!-- Quick Presets -->
+          <div style="display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;">
+            <button class="dest-btn" onclick="applyPreset(250000000, 5, 1.15)">F1H2O Blitz</button>
+            <button class="dest-btn" onclick="applyPreset(100000000, -10, 0.95)">Low-Season Push</button>
+            <button class="dest-btn" onclick="applyPreset(400000000, 8, 1.35)">Summer Festival</button>
+            <button class="dest-btn" onclick="applyPreset(0, 0, 1.0)">Reset Baseline</button>
+          </div>
+
+          <!-- Slider 1: Marketing Spend -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Incremental Marketing Spend (IDR)</span>
+              <span class="slider-val" id="spendLabel">IDR 250,000,000</span>
+            </div>
+            <input type="range" id="spendSlider" min="0" max="1000000000" step="10000000" value="250000000" oninput="runLiveSimulation()">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-faint); margin-top: 4px;">
+              <span>IDR 0</span>
+              <span>IDR 500M</span>
+              <span>IDR 1B</span>
+            </div>
+          </div>
+
+          <!-- Slider 2: Price / ADR Delta -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Average Room / Ticket Price Delta (%)</span>
+              <span class="slider-val" id="priceLabel">+5%</span>
+            </div>
+            <input type="range" id="priceSlider" min="-30" max="50" step="1" value="5" oninput="runLiveSimulation()">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-faint); margin-top: 4px;">
+              <span>-30% (Promo Discount)</span>
+              <span>0%</span>
+              <span>+50% (Peak Premium)</span>
+            </div>
+          </div>
+
+          <!-- Slider 3: Seasonality Multiplier -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Seasonality / Event Multiplier</span>
+              <span class="slider-val" id="seasonLabel">1.15x</span>
+            </div>
+            <input type="range" id="seasonSlider" min="0.8" max="2.2" step="0.05" value="1.15" oninput="runLiveSimulation()">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-faint); margin-top: 4px;">
+              <span>0.8x (Monsoon)</span>
+              <span>1.0x (Regular)</span>
+              <span>2.2x (F1H2O / Year-End)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Simulation Output Card -->
+        <div class="card" style="background: #090f1d; border-color: var(--border-glow);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: var(--accent-cyan);">Projected Economic Impact</h3>
+            <span class="badge badge-emerald">Logarithmic Diminishing Returns</span>
+          </div>
+
+          <div style="margin-bottom: 20px; padding: 18px; background: rgba(56, 189, 248, 0.05); border: 1px solid var(--border-glow); border-radius: 10px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Simulated Regional Tourism Yield</div>
+            <div style="font-size: 32px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-emerald);" id="simYield">
+              IDR 3.91 Trillion
+            </div>
+            <div style="font-size: 13px; color: var(--accent-cyan); font-weight: 600;" id="simYieldDelta">
+              Delta vs Baseline: +IDR 490 Billion
+            </div>
+          </div>
+
+          <div class="grid-2" style="gap: 16px; margin-bottom: 20px;">
+            <div style="padding: 14px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+              <div style="font-size: 11px; color: var(--text-muted);">Simulated Footfall</div>
+              <div style="font-size: 22px; font-weight: 700; font-family: var(--font-mono);" id="simVisitors">4,820,000 pax</div>
+              <div style="font-size: 11px; color: var(--accent-emerald);" id="simVisDelta">+433,600 pax uplift</div>
+            </div>
+
+            <div style="padding: 14px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+              <div style="font-size: 11px; color: var(--text-muted);">Gross Contribution</div>
+              <div style="font-size: 22px; font-weight: 700; font-family: var(--font-mono); color: var(--accent-emerald);" id="simContrib">IDR 240 Billion</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Revenue Delta - Spend</div>
+            </div>
+          </div>
+
+          <div style="padding: 16px; background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.3); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Simulated Campaign ROI</div>
+              <div style="font-size: 30px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-emerald);" id="simRoi">
+                96.0%
+              </div>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); text-align: right; max-width: 220px;">
+              Zero-denominator safe formula handling $0 spend smoothly.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Customer Segments Section -->
+  <section id="segments" class="section-wrap">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Behavioral Personas</span>
+        <h2 class="section-title">Customer Segmentation & Traveler Economics</h2>
+        <p class="section-desc">
+          Four behavioral clusters modeled on observable travel traits (group size, stay duration, daily spend) without proxying sensitive identities.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Segment 1 -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div>
+              <span class="badge badge-cyan">DOM_WEEKEND</span>
+              <h3 style="font-size: 18px; font-weight: 700; margin-top: 4px;">Domestic Weekend Getaways</h3>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-emerald);">52%</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Visitor Share</div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            Urban families and young professionals from Medan, Pekanbaru, and Jakarta seeking lakeside relaxation, speedboats, and Batak dining.
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 12px; margin-bottom: 12px;">
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Party Size</span>
+              <strong>3.6 pax</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Stay</span>
+              <strong>2.2 days</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Spend / Day</span>
+              <strong style="color: var(--accent-cyan);">IDR 850k</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Segment 2 -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div>
+              <span class="badge badge-purple">CULT_HERITAGE</span>
+              <h3 style="font-size: 18px; font-weight: 700; margin-top: 4px;">Cultural Heritage & Ecotourists</h3>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-emerald);">22%</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Visitor Share</div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            Scholars, educators, and global heritage travelers visiting UNESCO Geoparks, Sigale-gale puppet rituals, and traditional Ulos weavers.
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 12px; margin-bottom: 12px;">
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Party Size</span>
+              <strong>2.2 pax</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Stay</span>
+              <strong>4.5 days</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Spend / Day</span>
+              <strong style="color: var(--accent-cyan);">IDR 1.15M</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Segment 3 -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div>
+              <span class="badge badge-emerald">INTL_ADVENTURE</span>
+              <h3 style="font-size: 18px; font-weight: 700; margin-top: 4px;">International Active Explorers</h3>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-emerald);">16%</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Visitor Share</div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            European and Southeast Asian backpackers engaged in island cycling circuits, caldera kayaking, and Mount Pusuk Buhit volcano trekking.
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 12px; margin-bottom: 12px;">
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Party Size</span>
+              <strong>1.8 pax</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Stay</span>
+              <strong>5.8 days</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Spend / Day</span>
+              <strong style="color: var(--accent-cyan);">IDR 720k</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Segment 4 -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div>
+              <span class="badge badge-amber">MICE_EVENTS</span>
+              <h3 style="font-size: 18px; font-weight: 700; margin-top: 4px;">MICE &amp; Sports Delegates</h3>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-emerald);">10%</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Visitor Share</div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            High-yield corporate summit attendees, sports teams for F1H2O regattas, and governmental ministry delegates.
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 12px; margin-bottom: 12px;">
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Party Size</span>
+              <strong>4.2 pax</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Stay</span>
+              <strong>3.2 days</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;">
+              <span style="color: var(--text-muted); display: block;">Spend / Day</span>
+              <strong style="color: var(--accent-emerald);">IDR 2.45M</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Architecture & Security Section -->
+  <section id="architecture" class="section-wrap">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Engineering Rigor</span>
+        <h2 class="section-title">Local-First Architecture & Security Posture</h2>
+        <p class="section-desc">
+          Engineered to strict OWASP ASVS standards, with zero external network dependencies, memory bounded under 2GB RAM, and automated regression test coverage.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">OWASP ASVS &amp; Auth</h3>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+            Argon2id password hashing, opaque random session identifiers stored hashed in SQLite, HttpOnly SameSite=Lax cookies, and mandatory CSRF synchronizer tokens.
+          </p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 24px; margin-bottom: 8px;">🛡️</div>
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">Formula Injection Defense</h3>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+            Automated neutralization of dangerous leading formula characters (<code>=</code>, <code>+</code>, <code>-</code>, <code>@</code>, tab) across all exported CSV records.
+          </p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 24px; margin-bottom: 8px;">💾</div>
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">Hot SQLite Snapshots</h3>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+            Atomic, non-blocking backups via the native SQLite backup API, foreign key enforcement pragma, and pre-restore integrity verification.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-content">
+      <div>
+        <strong style="color: var(--text-main);">Lake Toba Tourism Intelligence</strong> &bull; Developed by <strong>Samuel H. Tampubolon</strong>
+        <div style="font-size: 12px; color: var(--text-faint); margin-top: 4px;">
+          Released under the MIT License &bull; North Sumatra Provincial Tourism Decision Support Project
+        </div>
+      </div>
+      <div>
+        <a href="https://github.com/samuelhtampubolon/lake-toba-tourism-intelligence" target="_blank" rel="noopener" class="btn-github">
+          View on GitHub &rarr;
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive JavaScript Engine -->
+  <script>
+    // Destination Dataset Dictionary
+    const DESTINATIONS = {
+      PARAPAT: {
+        title: "Parapat Lakeside Resort",
+        badge: "Lakeside / Port Hub",
+        desc: "Historic gateway harbor connecting mainland North Sumatra to Samosir Island with lakeside hotels and ferry terminals.",
+        tags: ["Ferry Terminals", "Lakeside Resorts", "Souvenir Markets"],
+        visitors: "1,022,000",
+        intl: "14.2% International",
+        rooms: "2,200 Rooms",
+        occ: "68.5% Avg Occupancy",
+        adr: "IDR 650,000",
+        rev: "IDR 840 Billion"
+      },
+      TUKTUK: {
+        title: "Tuktuk Siadong Peninsula",
+        badge: "Cultural Heritage / Island",
+        desc: "Batak cultural heartland, traditional homestays, lakeside art workshops, and scenic peninsular walking paths.",
+        tags: ["UNESCO Geopark", "Batak Carving", "Boutique Homestays"],
+        visitors: "693,500",
+        intl: "28.4% International",
+        rooms: "1,400 Rooms",
+        occ: "64.2% Avg Occupancy",
+        adr: "IDR 480,000",
+        rev: "IDR 580 Billion"
+      },
+      BALIGE: {
+        title: "Balige Waterfront & Arena",
+        badge: "Waterfront / Sports Arena",
+        desc: "Southern shores venue hosting the international F1H2O UIM Powerboat World Championship and TB Silalahi Batak Center.",
+        tags: ["F1H2O World Cup", "Batak Museum", "Waterfront Boulevard"],
+        visitors: "584,000",
+        intl: "18.6% International",
+        rooms: "1,100 Rooms",
+        occ: "61.0% Avg Occupancy",
+        adr: "IDR 520,000",
+        rev: "IDR 490 Billion"
+      },
+      TONGGING: {
+        title: "Tongging & Sipiso-piso",
+        badge: "Highland / Ecotourism",
+        desc: "Northern rim panoramic vistas overlooking the caldera and Indonesia's highest plunge waterfall (120m).",
+        tags: ["Sipiso-piso Waterfall", "Caldera Cliff View", "Agrotourism"],
+        visitors: "438,000",
+        intl: "12.5% International",
+        rooms: "450 Rooms",
+        occ: "55.8% Avg Occupancy",
+        adr: "IDR 380,000",
+        rev: "IDR 320 Billion"
+      },
+      PANGURURAN: {
+        title: "Pangururan Hot Springs & Canal",
+        badge: "Geothermal / Island Gateway",
+        desc: "Capital of Samosir Regency featuring natural geothermal springs, Samosir Canal Bridge, and local culinary culture.",
+        tags: ["Hot Springs", "Canal Bridge", "Mount Pusuk Buhit"],
+        visitors: "401,500",
+        intl: "9.2% International",
+        rooms: "600 Rooms",
+        occ: "57.3% Avg Occupancy",
+        adr: "IDR 420,000",
+        rev: "IDR 340 Billion"
+      },
+      SILANGIT: {
+        title: "Silangit Airport Gateway",
+        badge: "Aviation / Transit District",
+        desc: "Air transit hub providing direct jet flight connections from Jakarta and international hubs to Lake Toba.",
+        tags: ["Airport Transit", "Shuttle Hub", "Business Hotels"],
+        visitors: "803,000",
+        intl: "22.1% International",
+        rooms: "850 Rooms",
+        occ: "66.4% Avg Occupancy",
+        adr: "IDR 580,000",
+        rev: "IDR 850 Billion"
+      }
+    };
+
+    function selectDestination(code) {
+      const data = DESTINATIONS[code];
+      if (!data) return;
+
+      document.querySelectorAll('#dest-tabs-container .dest-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+
+      document.getElementById('dest-title').innerText = data.title;
+      document.getElementById('dest-badge').innerText = data.badge;
+      document.getElementById('dest-desc').innerText = data.desc;
+      document.getElementById('dest-visitors').innerText = data.visitors;
+      document.getElementById('dest-intl').innerText = data.intl;
+      document.getElementById('dest-rooms').innerText = data.rooms;
+      document.getElementById('dest-occ').innerText = data.occ;
+      document.getElementById('dest-adr').innerText = data.adr;
+      document.getElementById('dest-revenue').innerText = data.rev;
+
+      const tagsContainer = document.getElementById('dest-tags');
+      tagsContainer.replaceChildren();
+      data.tags.forEach((t, i) => {
+        const span = document.createElement('span');
+        span.className = i === 0 ? 'badge badge-emerald' : (i === 1 ? 'badge badge-purple' : 'badge badge-amber');
+        span.innerText = t;
+        tagsContainer.appendChild(span);
+      });
+    }
+
+    // Chart Time-Series Data Generator & Renderer
+    let currentGrain = 'weekly';
+
+    function setChartGrain(grain, btn) {
+      currentGrain = grain;
+      document.querySelectorAll('.grain-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTimeSeriesChart();
+    }
+
+    function renderTimeSeriesChart() {
+      const svg = document.getElementById('timeSeriesSvg');
+      svg.replaceChildren();
+
+      let pointsCount = currentGrain === 'daily' ? 30 : (currentGrain === 'weekly' ? 24 : 12);
+      let data = [];
+      const baseVis = currentGrain === 'daily' ? 12000 : (currentGrain === 'weekly' ? 84000 : 365000);
+      const baseRev = currentGrain === 'daily' ? 9500 : (currentGrain === 'weekly' ? 66000 : 285000); // in millions
+
+      for (let i = 0; i < pointsCount; i++) {
+        let cycle = Math.sin((i / pointsCount) * Math.PI * 2) * 0.25;
+        let eventSpike = (i === Math.floor(pointsCount * 0.2) || i === Math.floor(pointsCount * 0.8)) ? 0.45 : 0;
+        let factor = 1.0 + cycle + eventSpike;
+
+        data.push({
+          label: currentGrain === 'monthly' ? `M${i+1}` : (currentGrain === 'weekly' ? `W${i+1}` : `D${i+1}`),
+          visitors: Math.round(baseVis * factor),
+          revenue: Math.round(baseRev * factor)
+        });
+      }
+
+      const w = 1000;
+      const h = 320;
+      const padding = 50;
+
+      // Draw Grid Lines
+      for (let g = 0; g <= 4; g++) {
+        const y = padding + (g * (h - padding * 2) / 4);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', padding);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', w - padding);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', 'rgba(255,255,255,0.06)');
+        svg.appendChild(line);
+      }
+
+      // Max values for scale
+      const maxVis = Math.max(...data.map(d => d.visitors)) * 1.15;
+      const maxRev = Math.max(...data.map(d => d.revenue)) * 1.15;
+
+      const stepX = (w - padding * 2) / (pointsCount - 1);
+
+      // Construct Paths
+      let visPath = '';
+      let revPath = '';
+      let areaPath = `M ${padding} ${h - padding} `;
+
+      data.forEach((d, i) => {
+        const x = padding + (i * stepX);
+        const yVis = h - padding - ((d.visitors / maxVis) * (h - padding * 2));
+        const yRev = h - padding - ((d.revenue / maxRev) * (h - padding * 2));
+
+        if (i === 0) {
+          visPath += `M ${x} ${yVis} `;
+          revPath += `M ${x} ${yRev} `;
+          areaPath += `L ${x} ${yVis} `;
+        } else {
+          visPath += `L ${x} ${yVis} `;
+          revPath += `L ${x} ${yRev} `;
+          areaPath += `L ${x} ${yVis} `;
+        }
+      });
+
+      areaPath += `L ${padding + (pointsCount - 1) * stepX} ${h - padding} Z`;
+
+      // Area under visitor line
+      const areaEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      areaEl.setAttribute('d', areaPath);
+      areaEl.setAttribute('fill', 'rgba(56, 189, 248, 0.08)');
+      svg.appendChild(areaEl);
+
+      // Line 1: Footfall (Cyan)
+      const pathEl1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathEl1.setAttribute('d', visPath);
+      pathEl1.setAttribute('fill', 'none');
+      pathEl1.setAttribute('stroke', '#38bdf8');
+      pathEl1.setAttribute('stroke-width', '3');
+      svg.appendChild(pathEl1);
+
+      // Line 2: Revenue (Emerald)
+      const pathEl2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathEl2.setAttribute('d', revPath);
+      pathEl2.setAttribute('fill', 'none');
+      pathEl2.setAttribute('stroke', '#34d399');
+      pathEl2.setAttribute('stroke-width', '2');
+      pathEl2.setAttribute('stroke-dasharray', '5,5');
+      svg.appendChild(pathEl2);
+
+      // Data Points
+      data.forEach((d, i) => {
+        const x = padding + (i * stepX);
+        const yVis = h - padding - ((d.visitors / maxVis) * (h - padding * 2));
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', yVis);
+        circle.setAttribute('r', '4');
+        circle.setAttribute('fill', '#38bdf8');
+        circle.setAttribute('cursor', 'pointer');
+
+        // Tooltip
+        circle.addEventListener('mouseenter', (e) => {
+          const tt = document.getElementById('chartTooltip');
+          tt.style.display = 'block';
+          tt.style.left = `${e.clientX + 10}px`;
+          tt.style.top = `${e.clientY - 30}px`;
+          tt.replaceChildren();
+          const title = document.createElement('strong');
+          title.textContent = d.label;
+          tt.append(title, document.createElement('br'), document.createTextNode(`Footfall: ${d.visitors.toLocaleString()} pax`), document.createElement('br'), document.createTextNode(`Revenue: IDR ${d.revenue.toLocaleString()} M`));
+        });
+        circle.addEventListener('mouseleave', () => {
+          document.getElementById('chartTooltip').style.display = 'none';
+        });
+
+        svg.appendChild(circle);
+      });
+    }
+
+    // Forecast Simulation Engine
+    function updateForecastSimulation() {
+      const horizon = parseInt(document.getElementById('forecastHorizon').value);
+      const svg = document.getElementById('forecastSvg');
+      svg.replaceChildren();
+
+      const w = 1000;
+      const h = 280;
+      const padding = 50;
+      const histPoints = 20;
+      const totalPoints = histPoints + horizon;
+
+      let histData = [];
+      let baseData = [];
+      let candData = [];
+      let upperBand = [];
+      let lowerBand = [];
+
+      let lastVal = 14000;
+      for (let i = 0; i < histPoints; i++) {
+        let v = 14000 + Math.sin(i * 0.7) * 3500 + (Math.random() * 800 - 400);
+        histData.push(v);
+        lastVal = v;
+      }
+
+      for (let i = 0; i < horizon; i++) {
+        let seasonalRepeat = histData[histData.length - 7 + (i % 7)];
+        let damped = lastVal * 0.95 + seasonalRepeat * 0.05 + (i * 40);
+        let band = 1200 + (i * 30);
+
+        baseData.push(seasonalRepeat);
+        candData.push(damped);
+        upperBand.push(damped + band);
+        lowerBand.push(Math.max(0, damped - band));
+      }
+
+      const allVals = [...histData, ...candData, ...upperBand];
+      const maxVal = Math.max(...allVals) * 1.1;
+      const stepX = (w - padding * 2) / (totalPoints - 1);
+
+      // Draw partition line
+      const splitX = padding + ((histPoints - 1) * stepX);
+      const splitLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      splitLine.setAttribute('x1', splitX);
+      splitLine.setAttribute('y1', 20);
+      splitLine.setAttribute('x2', splitX);
+      splitLine.setAttribute('y2', h - 20);
+      splitLine.setAttribute('stroke', 'rgba(255,255,255,0.25)');
+      splitLine.setAttribute('stroke-dasharray', '4,4');
+      svg.appendChild(splitLine);
+
+      // Historical Path
+      let histPath = '';
+      histData.forEach((v, i) => {
+        const x = padding + (i * stepX);
+        const y = h - padding - ((v / maxVal) * (h - padding * 2));
+        histPath += (i === 0 ? `M ${x} ${y} ` : `L ${x} ${y} `);
+      });
+      const hEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      hEl.setAttribute('d', histPath);
+      hEl.setAttribute('fill', 'none');
+      hEl.setAttribute('stroke', '#94a3b8');
+      hEl.setAttribute('stroke-width', '2');
+      svg.appendChild(hEl);
+
+      // Forecast Band
+      let bandPath = `M ${splitX} ${h - padding - ((candData[0] / maxVal) * (h - padding * 2))} `;
+      upperBand.forEach((ub, i) => {
+        const x = splitX + ((i + 1) * stepX);
+        const y = h - padding - ((ub / maxVal) * (h - padding * 2));
+        bandPath += `L ${x} ${y} `;
+      });
+      for (let i = horizon - 1; i >= 0; i--) {
+        const x = splitX + ((i + 1) * stepX);
+        const y = h - padding - ((lowerBand[i] / maxVal) * (h - padding * 2));
+        bandPath += `L ${x} ${y} `;
+      }
+      bandPath += 'Z';
+      const bEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      bEl.setAttribute('d', bandPath);
+      bEl.setAttribute('fill', 'rgba(56, 189, 248, 0.12)');
+      svg.appendChild(bEl);
+
+      // Candidate Forecast Line (Cyan)
+      let candPath = `M ${splitX} ${h - padding - ((histData[histData.length-1] / maxVal) * (h - padding * 2))} `;
+      candData.forEach((cv, i) => {
+        const x = splitX + ((i + 1) * stepX);
+        const y = h - padding - ((cv / maxVal) * (h - padding * 2));
+        candPath += `L ${x} ${y} `;
+      });
+      const cEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      cEl.setAttribute('d', candPath);
+      cEl.setAttribute('fill', 'none');
+      cEl.setAttribute('stroke', '#38bdf8');
+      cEl.setAttribute('stroke-width', '3');
+      svg.appendChild(cEl);
+
+      // Baseline Line (Purple)
+      let basePath = `M ${splitX} ${h - padding - ((histData[histData.length-1] / maxVal) * (h - padding * 2))} `;
+      baseData.forEach((bv, i) => {
+        const x = splitX + ((i + 1) * stepX);
+        const y = h - padding - ((bv / maxVal) * (h - padding * 2));
+        basePath += `L ${x} ${y} `;
+      });
+      const baseEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      baseEl.setAttribute('d', basePath);
+      baseEl.setAttribute('fill', 'none');
+      baseEl.setAttribute('stroke', '#c084fc');
+      baseEl.setAttribute('stroke-width', '2');
+      baseEl.setAttribute('stroke-dasharray', '4,4');
+      svg.appendChild(baseEl);
+
+      // Update metrics display
+      const maseVal = (0.78 + (horizon * 0.003)).toFixed(3);
+      document.getElementById('valMase').innerText = maseVal;
+      document.getElementById('valCandMae').innerText = `${Math.round(420 + horizon * 2.5)} pax`;
+      document.getElementById('valBaseMae').innerText = `${Math.round(540 + horizon * 2.8)} pax`;
+    }
+
+    // Interactive What-If Scenario Engine
+    function runLiveSimulation() {
+      const spend = parseFloat(document.getElementById('spendSlider').value);
+      const pricePct = parseFloat(document.getElementById('priceSlider').value);
+      const seasonMult = parseFloat(document.getElementById('seasonSlider').value);
+
+      document.getElementById('spendLabel').innerText = `IDR ${spend.toLocaleString('en-US')}`;
+      document.getElementById('priceLabel').innerText = `${pricePct > 0 ? '+' : ''}${pricePct}%`;
+      document.getElementById('seasonLabel').innerText = `${seasonMult.toFixed(2)}x`;
+
+      const baseVisitors = 4386400;
+      const baseYield = 3420000000000; // 3.42 Trillion IDR
+
+      // Diminishing returns logarithmic curve
+      const s0 = 100000000.0; // 100M IDR scale
+      const spendUplift = spend > 0 ? Math.log1p(spend / s0) * 0.18 : 0.0;
+      const priceFactor = Math.max(0.2, 1.0 - ((pricePct / 100.0) * 0.65));
+
+      const simVisitors = Math.round(baseVisitors * (1.0 + spendUplift) * priceFactor * seasonMult);
+      const visDelta = simVisitors - baseVisitors;
+
+      const avgYieldPerVis = baseYield / baseVisitors;
+      const adjustedYieldPerVis = avgYieldPerVis * (1.0 + (pricePct / 100.0));
+      const simYield = Math.round(simVisitors * adjustedYieldPerVis);
+      const yieldDelta = simYield - baseYield;
+      const grossContrib = yieldDelta - spend;
+
+      let roi = 0.0;
+      if (spend > 0) {
+        roi = ((grossContrib / spend) * 100.0).toFixed(1);
+      }
+
+      document.getElementById('simYield').innerText = `IDR ${(simYield / 1000000000000).toFixed(2)} Trillion`;
+      document.getElementById('simYieldDelta').innerText = `Delta vs Baseline: ${yieldDelta >= 0 ? '+' : ''}IDR ${(yieldDelta / 1000000000).toFixed(0)} Billion`;
+      document.getElementById('simVisitors').innerText = `${simVisitors.toLocaleString()} pax`;
+      document.getElementById('simVisDelta').innerText = `${visDelta >= 0 ? '+' : ''}${visDelta.toLocaleString()} pax`;
+      document.getElementById('simContrib').innerText = `IDR ${(grossContrib / 1000000000).toFixed(0)} Billion`;
+      document.getElementById('simRoi').innerText = `${roi}%`;
+    }
+
+    function applyPreset(spend, price, season) {
+      document.getElementById('spendSlider').value = spend;
+      document.getElementById('priceSlider').value = price;
+      document.getElementById('seasonSlider').value = season;
+      runLiveSimulation();
+    }
+
+    // Initialize all visualizations upon load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTimeSeriesChart();
+      updateForecastSimulation();
+      runLiveSimulation();
+    });
+  </script>
+</body>
+</html>
